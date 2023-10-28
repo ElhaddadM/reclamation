@@ -36,6 +36,8 @@ require __DIR__.'/auth.php';
 Route::resource('reclamation', ReclamationController::class);
 Route::Post('reclamation/valider', [ReclamationController::class,'valider'])->name('reclamation.valider');
 Route::PUT('reclamation/{id}', [ReclamationController::class,'updateReclamation'])->name('reclamation.updateReclamation');
+Route::POST('reclamationDel', [ReclamationController::class,'ReclamationDel'])->name('reclamation.ReclamationDel');
+Route::get('reclamationPdf/{id?}', [ReclamationController::class,'ReclamationPdf'])->name('reclamation.ReclamationPdf');
 
 
 Route::get('recl', [ReclamationController::class,'getReclamation'])->name('reclamation.getReclamation');

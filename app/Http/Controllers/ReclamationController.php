@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use PDF;
 use App\Models\Reclamation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,14 @@ class ReclamationController extends Controller
      */
     public function index()
     {
+        if (User::find(Auth::user()->id) ->IsAdmin === 1){
+            $Reclamations = DB::table('users')->join('reclamations', 'users.id', '=','reclamations.user_id')->where('IsValidate',true)->paginate(5);
+            $user = User::find(Auth::user()->id);
+            return  \view('dashboard')->with(['Reclamations' =>$Reclamations,'User' => $user]);
 
+
+
+        }
         $Reclamations =  DB::table('reclamations')->where('user_id', Auth::user()->id)
         ->paginate(4);
         $user = User::find(Auth::user()->id);
@@ -103,6 +111,40 @@ class ReclamationController extends Controller
     public function getReclamation(){
         return  DB::table('reclamations')->join('users','reclamations.user_id','=','users.id')
         ->get();
+    }
+    public function ReclamationDel(Request $request){
+        $validate = $request->validate(['reclamation_id' => 'required','Cause'=>'required']);
+        $reclamation = Reclamation::find($request->reclamation_id);
+       $reclamation->IsValidate = false;
+       $reclamation->Notice = $request->Cause;
+       $reclamation->save();
+       return redirect()->route('dashboard');
+    }
+
+    public function ReclamationPdf (Request $request){
+
+        if ( $request->id != ''){
+        $Reclamations = DB::table('users')->join('reclamations', 'users.id', '=','reclamations.user_id')->where('reclamations.id',$request->id)->get();
+        $data = [
+            'Title' => 'Detail Reclamation',
+            "Date" => date('d-m-Y'),
+            "Data" => $Reclamations
+
+        ];
+
+        $pdf = PDF::loadView('ReclamationPdf', $data);
+        return $pdf->download('Reclamation'.$request->id.'.pdf');
+
+        };
+        $Reclamations = DB::table('users')->join('reclamations', 'users.id', '=','reclamations.user_id')->where('IsValidate',true)->get() ;
+        $data = [
+            'Title' => 'Detail Reclamation',
+            "Date" => date('d-m-Y'),
+            "Data" => $Reclamations
+
+        ];
+        $pdf = PDF::loadView('ReclamationPdf', $data);
+        return $pdf->download('Reclamations_Pdf.pdf');
     }
 }
 
