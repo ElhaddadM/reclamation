@@ -16,7 +16,7 @@
                       @else
                       <div class="input-group mb-3 w-75  ">
                          <a href="{{ route('reclamation.ReclamationPdf') }}">
-                            <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="basic-addon2">Download All Reclamations</button>
+                            <button class="btn btn-primary "  >Download All Reclamations</button>
                          </a>
                        </div>
                       @endif
